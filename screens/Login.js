@@ -1,12 +1,40 @@
-import { View, Text,TouchableOpacity, Image, ImageBackground, LineBreak, TextInput } from 'react-native'
-import React from 'react'
+import { View, Text,TouchableOpacity, Image, ImageBackground, LineBreak, TextInput,Alert } from 'react-native'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ArrowLeftIcon, UserIcon, LockClosedIcon } from 'react-native-heroicons/solid'
 import { useNavigation } from '@react-navigation/native'
+import { API_BASE_URL } from '../constant'
 
 export default function LoginScreen() {
   const navigation = useNavigation();
   const [isHovered, setIsHovered] = React.useState(false);
+
+  //Handle login
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(API_BASE_URL + '?request=login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        Alert.alert('Login successful', 'Welcome back!');
+        // Navigate to another screen, e.g., home screen
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Login failed', data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      Alert.alert('An error occurred', error.message);
+    }
+  };
   return (
       <SafeAreaView className="relative bg-[#295E4E] h-full">
         {/* Image Background */}
@@ -32,6 +60,8 @@ export default function LoginScreen() {
                 <UserIcon size={20} color="gray" />
               <TextInput
                 className="flex-1 p-4 bg-gray-100 text-gray-700 rounded-2xl"
+                value={username}
+                onChangeText={setUsername}
                 placeholder='Enter Username'/>
               </View>
               
@@ -42,12 +72,15 @@ export default function LoginScreen() {
               <TextInput
                 className="flex-1 p-4 bg-gray-100 text-gray-700 rounded-2xl"
                 secureTextEntry
+                value={password}
+                onChangeText={setPassword}
                 placeholder='Enter Password'/>
               </View>
                 <TouchableOpacity className="flex items-end">
                   <Text className="text-gray-700 mb-10">Forgot Password?</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
+                  onPress={handleLogin}
                   className="py-3 bg-[#FFA500] rounded-xl"
                 >
                     <Text className="font-2xl font-bold text-center text-[#fff]">Login</Text>

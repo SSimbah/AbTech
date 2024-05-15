@@ -46,6 +46,7 @@ export default function SignupScreen() {
                 placeholder='Enter Username'/>
                 <TextInput
                 className="p-4 bg-gray-100 text-gray-700 rounded-[5px]"
+                secureTextEntry
                 placeholder='Enter Password'/>
 
                 
